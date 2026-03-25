@@ -1,0 +1,41 @@
+# Customer Service — http profile: localhost:5002 (veja Properties/launchSettings.json)
+# Para testar pelo gateway, use o ficheiro na raiz: DevApi.http
+
+@CustomerService_HostAddress = http://localhost:5002
+
+@customerId = 00000000-0000-0000-0000-000000000000
+
+
+### GET todos
+GET {{CustomerService_HostAddress}}/api/customers
+
+### GET por id — substitua @customerId
+GET {{CustomerService_HostAddress}}/api/customers/{{customerId}}
+
+### GET por e-mail (%40 = @)
+GET {{CustomerService_HostAddress}}/api/customers/email/cliente%40teste.com
+
+### POST criar
+POST {{CustomerService_HostAddress}}/api/customers
+Content-Type: application/json
+
+{
+  "name": "Cliente Teste",
+  "email": "cliente@teste.com",
+  "phone": "+5511999999999",
+  "documentNumber": "12345678901"
+}
+
+### PUT — substitua @customerId
+PUT {{CustomerService_HostAddress}}/api/customers/{{customerId}}
+Content-Type: application/json
+
+{
+  "name": "Cliente Atualizado",
+  "email": "cliente@teste.com",
+  "phone": "+5511888888888",
+  "documentNumber": "12345678901"
+}
+
+### DELETE — substitua @customerId
+DELETE {{CustomerService_HostAddress}}/api/customers/{{customerId}}
