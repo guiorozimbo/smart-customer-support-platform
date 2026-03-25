@@ -1,0 +1,137 @@
+# =============================================================================
+# DevApi.http — testes manuais (extensão "REST Client" no VS Code/Cursor)
+#
+# Como usar:
+#   • Ajuste as variáveis @gateway / @customerService se suas portas forem outras.
+#   • Cada pedido fica entre linhas "###". Clique em "Send Request" acima do método.
+#   • Para novos GET/POST/PUT/DELETE: copie um bloco completo, mude método, URL e body.
+#   • E-mails no path: use %40 no lugar de @ (ex.: cliente%40teste.com).
+# =============================================================================
+
+@gateway = http://localhost:5000
+@customerService = http://localhost:5002
+@chatbot = http://localhost:5004
+
+# Substitua depois do POST por um id real (resposta ou GET lista).
+@customerId = 00000000-0000-0000-0000-000000000000
+
+
+# -----------------------------------------------------------------------------
+# Integração (Minimal API) — texto livre; resposta { "type", "content" }
+# Mesmo cluster do chatbot no gateway: use {{gateway}} ou chamada direta {{chatbot}}
+# -----------------------------------------------------------------------------
+
+### Integração — POST mensagem (via gateway :5000)
+POST {{gateway}}/api/integration/messages
+Content-Type: application/json
+
+{
+  "text": "projeto"
+}
+
+### Integração — POST mensagem (direto no serviço :5004)
+POST {{chatbot}}/api/integration/messages
+Content-Type: application/json
+
+{
+  "text": "status"
+}
+
+
+# -----------------------------------------------------------------------------
+# Customers — via API Gateway (recomendado: um único ponto de entrada)
+# -----------------------------------------------------------------------------
+
+### Customers — POST criar (gateway)
+POST {{gateway}}/api/customers
+Content-Type: application/json
+
+{
+  "name": "Cliente Teste",
+  "email": "cliente@teste.com",
+  "phone": "+5511999999999",
+  "documentNumber": "12345678901"
+}
+
+### Customers — GET listar todos (gateway)
+GET {{gateway}}/api/customers
+
+### Customers — GET por id (gateway) — troque @customerId
+GET {{gateway}}/api/customers/{{customerId}}
+
+### Customers — GET por e-mail (gateway)
+GET {{gateway}}/api/customers/email/cliente%40teste.com
+
+### Customers — PUT atualizar (gateway) — troque @customerId
+PUT {{gateway}}/api/customers/{{customerId}}
+Content-Type: application/json
+
+{
+  "name": "Cliente Teste Atualizado",
+  "email": "cliente@teste.com",
+  "phone": "+5511888888888",
+  "documentNumber": "12345678901"
+}
+
+### Customers — DELETE (gateway) — troque @customerId
+DELETE {{gateway}}/api/customers/{{customerId}}
+
+
+# -----------------------------------------------------------------------------
+# Customers — direto no Customer Service (sem gateway; porta 5002)
+# Adicione aqui variações ou testes isolados do microserviço.
+# -----------------------------------------------------------------------------
+
+### Customers — POST criar (direto :5002)
+POST {{customerService}}/api/customers
+Content-Type: application/json
+
+{
+  "name": "Cliente Direto",
+  "email": "direto@teste.com",
+  "phone": "+5511977777777",
+  "documentNumber": "10987654321"
+}
+
+
+# -----------------------------------------------------------------------------
+# Chatbot (Blip) — via gateway
+# -----------------------------------------------------------------------------
+
+### Chatbot — GET customer por e-mail (objeto completo: id, name, email…)
+GET {{gateway}}/api/chatbot/customer?email=cliente%40teste.com
+
+### Chatbot — GET só o email confirmado (JSON mínimo: { "email": "..." })
+GET {{gateway}}/api/chatbot/customer/email?email=cliente%40teste.com
+
+### Chatbot — GET orders por e-mail
+GET {{gateway}}/api/chatbot/orders?email=cliente%40teste.com
+
+### Chatbot — GET tickets por e-mail
+GET {{gateway}}/api/chatbot/tickets?email=cliente%40teste.com
+
+### Chatbot — POST abrir ticket
+POST {{gateway}}/api/chatbot/ticket
+Content-Type: application/json
+
+{
+  "customerEmail": "cliente@teste.com",
+  "title": "Assunto do chamado",
+  "description": "Descrição detalhada",
+  "orderNumber": null,
+  "priority": "Medium"
+}
+
+### Chatbot — health (serviço em :5004; gateway não expõe /health do chatbot)
+GET http://localhost:5004/health
+
+
+# -----------------------------------------------------------------------------
+# Onde adicionar novos pedidos
+# -----------------------------------------------------------------------------
+# 1. Copie um bloco "### ..." completo de cima.
+# 2. Altere a primeira linha: ### Nome do seu teste
+# 3. Mude GET/POST/PUT/DELETE, URL e body.
+# 4. Para Orders/Tickets, crie uma seção nova parecida com Customers.
+#    Ex.: {{gateway}}/api/orders  e  {{gateway}}/api/tickets
+# =============================================================================
