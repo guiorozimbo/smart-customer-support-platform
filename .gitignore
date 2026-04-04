@@ -1,4 +1,8 @@
-## Build (.NET)
+## ==========================================
+## .NET / ASP.NET CORE - SENIOR SECURITY .gitignore
+## ==========================================
+
+## Build & Artifacts (.NET)
 [Bb]in/
 [Oo]bj/
 [Dd]ebug/
@@ -12,6 +16,44 @@ bld/
 [Ll]og/
 [Ll]ogs/
 *.log
+*.log.*
+*.binlog
+artifacts/
+publish/
+
+## Security & Sensitive Data (CRITICAL)
+# Ignore all appsettings except the base ones (keep them as templates)
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/appsettings.Staging.json
+**/appsettings.*.local.json
+**/appsettings.json.user
+**/secrets.json
+**/usersecrets/
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.cer
+*.key
+*.pem
+*.pubxml
+*.pubxml.user
+
+## Database & Data
+*.mdf
+*.ldf
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.bak
+*.sql
+# SQL Server local database files
+_db_data/
+App_Data/*.mdf
+App_Data/*.ldf
 
 ## Visual Studio / VS Code / Rider
 .vs/
@@ -22,11 +64,16 @@ bld/
 *.rsuser
 .idea/
 *.DotSettings.user
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+*.swp
+*~
 
 ## NuGet / MSBuild
 project.lock.json
 project.fragment.lock.json
-artifacts/
 .nuget/
 *.nuget.props
 *.nuget.targets
@@ -35,7 +82,7 @@ msbuild.binlog
 *.nupkg
 *.snupkg
 
-## Test / cobertura
+## Test & Coverage
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 *.trx
@@ -45,23 +92,23 @@ coverage*.json
 coverage*.xml
 coverage*.info
 
-## Segredos locais (não enviar para o GitHub)
-**/appsettings.*.local.json
-**/secrets.json
-*.pfx
+## Docker & Containers
+.dockerignore
+# Do not ignore Dockerfile if it's needed for build, but ignore sensitive docker files
+docker-compose.override.yml
+.devcontainer/
 
-## SOPS / ambientes
-.env
-.env.*
-!.env.example
-
-## macOS / Windows
+## OS Specific
 .DS_Store
 Thumbs.db
 Desktop.ini
+ehthumbs.db
+[Tt]humbs.db
 
-## Pastas de compilação “extra” usadas para validar sem lock de exe
+## Special / Extra
 **/bin/compile-verify/
 **/bin/verify-build/
 **/bin/sln-verify/
 **/bin/check-build/
+DevApi.http.user
+
